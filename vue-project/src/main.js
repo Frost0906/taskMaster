@@ -6,13 +6,14 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-const app = createApp(App)
+const app = createApp(App);
+const pinia = createPinia();
 
-app.use(createPinia())
-app.use(router)
+app.use(pinia);
+app.use(router);
 
-// document.addEventListener(function () {
+// document.addEventListener('deviceready', function () {
 //     app.mount('#app')
-// }, false)
+// }, false);
 
-app.mount('#app')
+app.mount('#app');

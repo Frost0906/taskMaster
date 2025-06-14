@@ -5,6 +5,6 @@
     }
   },
   "exclude": ["node_modules",
-    "www"
+    "../taskMaster/www_bkp"
   ]
 }
