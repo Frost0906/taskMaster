@@ -1,16 +1,16 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import TaskDetail from "@/components/TaskDetail.vue";
 import SettingsView from "@/views/SettingsView.vue";
-import HomePage from "@/views/HomePage.vue";
 import TaskList from "@/components/TaskList.vue";
+import TaskDialog from "@/components/TaskDialog.vue";
+import Support from "@/views/Support.vue";
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {path: '/homePage', component: TaskList},
         {path: '/settings', component: SettingsView},
-        {path: '/task/:taskId', component: TaskDetail},
-        {path: '/task/new', component: TaskDetail},
+        {path: '/support', component: Support},
+        {path: '/task/:taskId', component: TaskDialog},
         {path: '/all', component: TaskList},
         {path: '/today', component: TaskList},
         {path: '/todo', component: TaskList},

@@ -12,8 +12,8 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 
-// document.addEventListener('deviceready', function () {
-//     app.mount('#app')
-// }, false);
+document.addEventListener('deviceready', function () {
+    app.mount('#app')
+}, false);
 
-app.mount('#app');
+// app.mount('#app');

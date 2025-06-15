@@ -1,6 +1,6 @@
 <template>
     <van-nav-bar title="标题" />
-    <van-form @submit="onSubmit">
+    <van-form>
         <van-cell-group inset>
             <van-field
                 v-model="task.title"
@@ -18,7 +18,7 @@
                 placeholder="描述"
             />
             <van-field
-                v-model="task.priority"
+                v-model="displayPriority"
                 is-link
                 readonly
                 label="优先级"
@@ -55,18 +55,23 @@
             </van-field>
         </van-cell-group>
         <div style="margin: 16px;">
-            <van-button round block type="primary" native-type="submit">
-                提交
+            <van-button round block type="primary" @click="submitForm">
+                完成
             </van-button>
+            <van-button v-if="!isNewTask" type="danger" @click="deleteTask">删除</van-button>
+
         </div>
     </van-form>
 
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, watchEffect, computed} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useTaskStore} from "@/store/task.js";
 
 const task = ref({
+    id: '',
     title: '',
     description: '',
     priority: '',
@@ -82,10 +87,19 @@ const onConfirmDate = (date) => {
     showCalendar.value = false;
 };
 
+const displayPriority = computed(() => {
+    const map = {
+        high: '高',
+        medium: '中',
+        low: '低'
+    };
+    return map[task.value.priority] || task.value.priority;
+});
+
 const priorityField = [
-    { text: '高', value: '高' },
-    { text: '中', value: '中' },
-    { text: '低', value: '低' },
+    { text: '高', value: 'high' },
+    { text: '中', value: 'medium' },
+    { text: '低', value: 'low' },
 ];
 const showPicker = ref(false);
 const pickerValue = ref([]);
@@ -98,17 +112,79 @@ const onConfirmPriority = ({ selectedOptions }) => {
     }
 };
 
-// [修改处] 定义事件发射器
-const emit = defineEmits(['close', 'submit']);
+const route = useRoute();
+const router = useRouter();
+const tasksStore = useTaskStore();
+const isNewTask = ref(false);
 
-const props = defineProps({
-    initialData: Object
+// 检查是否是新建任务
+if (route.params.taskId === 'new') {
+    isNewTask.value = true;
+}
+
+// 获取当前任务并填充表单
+watchEffect(() => {
+    // 新建任务 - 重置表单
+    if (isNewTask.value) {
+        task.value = {
+            id: '',
+            title: '',
+            description: '',
+            priority: '',
+            dueDate: '',
+            completed: false,
+            remind: false,
+            subtasks: []
+        };
+        return;
+    }
+
+    // 获取任务ID并验证
+    const taskId = Number(route.params.taskId);
+    if (!taskId || isNaN(taskId)) {
+        return;
+    }
+
+    // 从store中查找任务
+    const currentTask = tasksStore.tasks.find(task => task.id === taskId);
+
+    // 找到任务 - 填充表单
+    if (currentTask) {
+        // 使用深拷贝避免直接修改store数据
+        task.value = JSON.parse(JSON.stringify(currentTask));
+    } else {
+        // 未找到任务 - 重置表单
+        console.warn(`Task with ID ${taskId} not found`);
+        task.value = {
+            id: '',
+            title: '',
+            description: '',
+            priority: '',
+            dueDate: '',
+            completed: false,
+            remind: false,
+            subtasks: []
+        };
+    }
 });
 
-// [修改处] 表单提交处理
-const onSubmit = () => {
-    emit('submit', task.value);  // 发射submit事件
-};
+// 提交表单的方法
+function submitForm() {
+    if (isNewTask.value) {
+        tasksStore.addTask({
+            ...task.value,
+            id: Date.now()
+        });
+    } else {
+        tasksStore.updateTask(task.value);
+    }
+    router.push('/all');
+}
+
+function deleteTask() {
+    tasksStore.deleteTask(task.value.id);
+    router.push('/all');
+}
 </script>
 
 <style scoped>

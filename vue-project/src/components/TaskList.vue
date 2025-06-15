@@ -2,7 +2,7 @@
     <home-page/>
     <van-list>
         <van-cell-group>
-            <van-swipe-cell v-for="task in filteredTasks" :key="task.id" @click="$router.push(`/task/${task.id}`)">
+            <van-swipe-cell v-for="task in filteredTasks" :key="task.id" @click="router.push(`/task/${task.id}`)">
                 <van-card :desc="task.description" :title="task.title">
                     <template #tags>
                         <van-tag plain type="danger" style="margin-right: 8px;" v-if="task.priority === 'high'">高</van-tag>
@@ -19,7 +19,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter} from 'vue-router';
-import { useTaskStore } from '@/store/index.js';
+import { useTaskStore } from '@/store/task.js';
 import HomePage from "@/views/HomePage.vue";
 
 const router = useRouter();
