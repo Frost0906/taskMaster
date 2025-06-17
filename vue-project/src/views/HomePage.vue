@@ -6,6 +6,11 @@
         <van-tab title="已完成" name="completed"></van-tab>
         <van-tab title="高优先级" name="highPriority"></van-tab>
     </van-tabs>
+    <van-nav-bar title="任务列表">
+        <template #left>
+            <van-icon name="todo-list" size="28" />
+        </template>
+    </van-nav-bar>
 </template>
 
 <script setup>

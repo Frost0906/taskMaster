@@ -1,5 +1,13 @@
 <template>
-    <van-nav-bar title="标题" />
+    <van-nav-bar
+        title="任务详情"
+        left-text="返回"
+        left-arrow
+        @click-left="onClickLeft">
+        <template #right>
+            <van-icon name="description" size="18" />
+        </template>
+    </van-nav-bar>
     <van-form>
         <van-cell-group inset>
             <van-field
@@ -55,11 +63,8 @@
             </van-field>
         </van-cell-group>
         <div style="margin: 16px;">
-            <van-button round block type="primary" @click="submitForm">
-                完成
-            </van-button>
-            <van-button v-if="!isNewTask" type="danger" @click="deleteTask">删除</van-button>
-
+            <van-button block type="primary" @click="submitForm">完成</van-button>
+            <van-button v-if="!isNewTask" block type="danger" @click="deleteTask">删除</van-button>
         </div>
     </van-form>
 
@@ -69,6 +74,9 @@
 import {ref, watchEffect, computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useTaskStore} from "@/store/task.js";
+import {showConfirmDialog, showFailToast, showSuccessToast} from "vant";
+
+const onClickLeft = () => history.back();
 
 const task = ref({
     id: '',
@@ -132,8 +140,8 @@ watchEffect(() => {
             description: '',
             priority: '',
             dueDate: '',
-            completed: false,
-            remind: false,
+            completed: '',
+            remind: '',
             subtasks: []
         };
         return;
@@ -161,8 +169,8 @@ watchEffect(() => {
             description: '',
             priority: '',
             dueDate: '',
-            completed: false,
-            remind: false,
+            completed: '',
+            remind: '',
             subtasks: []
         };
     }
@@ -170,19 +178,34 @@ watchEffect(() => {
 
 // 提交表单的方法
 function submitForm() {
+    if (!task.value.title) {
+        showFailToast('请输入任务标题');
+        return;
+    }
     if (isNewTask.value) {
         tasksStore.addTask({
             ...task.value,
             id: Date.now()
         });
+        showSuccessToast('添加任务成功');
     } else {
         tasksStore.updateTask(task.value);
+        showSuccessToast('修改任务成功');
     }
     router.push('/all');
 }
 
 function deleteTask() {
-    tasksStore.deleteTask(task.value.id);
+    showConfirmDialog({
+        message:
+            '您确认要删除吗?',
+    })
+        .then(() => {
+            tasksStore.deleteTask(task.value.id);
+            showSuccessToast('删除任务成功');
+        })
+        .catch(() => {
+        });
     router.push('/all');
 }
 </script>
