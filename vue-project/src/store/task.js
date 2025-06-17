@@ -18,11 +18,6 @@ export const useTaskStore = defineStore('tasks', () => {
             priority: 'high',
             dueDate: '2025-6-14',
             completed: false,
-            subtasks: [
-                { id: 1, title: '收集数据', completed: true },
-                { id: 2, title: '撰写草稿', completed: false },
-                { id: 3, title: '审阅修改', completed: false },
-            ],
         },
         {
             id: 2,
@@ -31,7 +26,6 @@ export const useTaskStore = defineStore('tasks', () => {
             priority: 'medium',
             dueDate: '2025-6-12',
             completed: false,
-            subtasks: [],
         },
         {
             id: 3,
@@ -40,7 +34,14 @@ export const useTaskStore = defineStore('tasks', () => {
             priority: 'low',
             dueDate: '2025-6-20',
             completed: true,
-            subtasks: [],
+        },
+        {
+            id: 4,
+            title: '汇报',
+            description: '',
+            priority: 'high',
+            dueDate: '2025-6-17',
+            completed: false,
         },
     ]);
 
